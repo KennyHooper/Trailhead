@@ -1,0 +1,20 @@
+trigger ClosedOpportunityTrigger on Opportunity (after insert, after update) {
+
+//}
+
+//trigger AddRelatedRecord on Account(after insert, after update) {
+    List<Task> taskList = new List<Task>();
+    
+    // Add an opportunity for each account if it doesn't already have one.
+    // Iterate over accounts that are in this trigger but that don't have opportunities.
+    for (Opportunity o : [SELECT Id,Name FROM Opportunity
+                     WHERE Id IN :Trigger.New AND StageName='Closed Won']){
+        // Add a default opportunity for this account
+        taskList.add(new Task( Subject='Follow Up Test Task',
+                               WhatId=o.Id)); 
+    }
+    
+    //if (taskList.size() > 0) {
+        insert taskList;
+    //}
+}
